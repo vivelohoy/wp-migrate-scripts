@@ -15,7 +15,7 @@ Scripts used for migrating the WordPress database from TribApps hosting with WP 
 1. database dump from production vivelohoy RDS DB server (get password from [production_settings.json](https://github.com/vivelohoy/vivelohoy-2.0/blob/master/data/production_settings.json#L45) of vivelohoy 2.0):
 
   ```
-  mysqldump --user=vivelohoy --host=vivelohoy-db.c0petvek1fz0.us-east-1.rds.amazonaws.com --password --quick --skip-lock-tables vivelohoy | sed s/www.vivelohoy.com/WPDEPLOYDOMAN/g | bzip2 > /mnt/apps/sites/vivelohoy/data/data.sql.bz2
+  mysqldump --user=vivelohoy --host=vivelohoy-db.c0petvek1fz0.us-east-1.rds.amazonaws.com --password --quick --skip-lock-tables vivelohoy | bzip2 > /mnt/apps/sites/vivelohoy/data/data.sql.bz2
   ```
   
 2. transfer database dump from vivelohoy admin server to local system
@@ -37,31 +37,35 @@ Scripts used for migrating the WordPress database from TribApps hosting with WP 
   ```
   mysql --user=root --password tmp_vivelohoy_1 < drop_plugin_tables.sql
   ```
-  
-6. remove rows in wp_blogs table associated with other blogs
-7. Dump local database to file
+
+6. re-embed videos into video posts:
+
+  ```
+  mysql --user=root --password tmp_vivelohoy_1 < reembed_videos.sql
+  ```
+
+7. remove rows in wp_blogs table associated with other blogs:
+
+  ```
+  ```
+
+8. Dump local database to file:
 
   ```
   mysqldump --user=root --password tmp_vivelohoy_1 > vivelohoy.sql
   ```
   
-8. Load database dump to vagrant WordPress installation with:
+9. Load database dump to vagrant WordPress installation with:
 
   ```
   fab vagrant_reload_db:vivelohoy.sql,wordpress
   ```
   
-9. Open http://vagrant.dev/wp-admin/ to initiate database version upgrade (to be compatible with WordPress 3.9.1 instead of 3.2)
-10. Dump database from vagrant system to local using:
+10. Open http://vagrant.dev/wp-admin/ to initiate database version upgrade (to be compatible with WordPress 3.9.1 instead of 3.2)
+11. Dump database from vagrant system to local using:
 
   ```
   fab vagrant_dump_db:vivelohoy-upgraded.sql,wordpress
-  ```
-  
-11. replace “WPDEPLOYDOMAN” with “vivelohoy3.wpengine.com”
-
-  ```
-  cat vivelohoy-upgraded.sql | sed s/WPDEPLOYDOMAN/vivelohoy3.wpengine.com/g > vivelohoy-wpengine.sql 
   ```
   
 12. Replace instances of the string “MyISAM” in the dump file with “InnoDB”
@@ -99,17 +103,10 @@ Scripts used for migrating the WordPress database from TribApps hosting with WP 
   UPDATE `wp_vivelohoy3`.`wp_users` SET `user_pass` = MD5( 'SECRET PASSWORD' ) WHERE `wp_users`.`user_login` LIKE 'vivelohoy3';
   ```
   
-20. Through phpmyadmin, open the wp_posts table and change the options upload_path and upload_url_path to blank (instead of “../uploads” and “/wp-content/uploads”, respectively). This can also be done with the following SQL statements:
+19. Through phpmyadmin, open the wp_posts table and change the options upload_path and upload_url_path to blank (instead of “../uploads” and “/wp-content/uploads”, respectively). This can also be done with the following SQL statements:
 
   ```sql
   UPDATE wp_options SET option_value = '' WHERE option_name LIKE 'upload_path';
   UPDATE wp_options SET option_value = '' WHERE option_name LIKE 'upload_url_path';
   ```
-
-21. Reset options in wpengine wp-admin to what they should be
-22. replace img src addresses from relative path /wp-content/uploads/ to full S3 address (https://s3.amazonaws.com/wpmedia.vivelohoy.com/wp-content/uploads/). This can be done in MySQL with the statement:
-
-  ```sql
-  UPDATE wp_posts
-    SET post_content = REPLACE(post_content, 'src="/wp-content/uploads', 'src="https://s3.amazonaws.com/wpmedia.vivelohoy.com/wp-content/uploads');
-  ```
+  
