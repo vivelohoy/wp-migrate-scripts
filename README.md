@@ -97,7 +97,7 @@ Scripts used for migrating the WordPress database from TribApps hosting with WP 
   ```
 
 16. Upload the bzipped SQL file to wpengine over SFTP into the _wpeprivate folder.
-17. Notify a WPEngine support staffer through Support/Live Chat that you have uploaded the file and you would like them to manually load the dump file into our database.
+17. Notify Tony Gilharry that we need the database reloaded using the uploaded SQL file.
 18. Through phpmyadmin, reset the vivelohoy admin user’s password to what is in our DEV LOGINS password file. This can be done with the SQL statement:
 
   ```sql
