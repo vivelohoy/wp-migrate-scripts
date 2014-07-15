@@ -47,6 +47,7 @@ Scripts used for migrating the WordPress database from TribApps hosting with WP 
 7. remove rows in wp_blogs table associated with other blogs:
 
   ```
+  mysql --user=root --password tmp_vivelohoy_1 --execute="DELETE FROM wp_blogs WHERE blog_id <> 1;"
   ```
 
 8. Dump local database to file:
