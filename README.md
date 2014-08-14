@@ -44,6 +44,12 @@ Scripts used for migrating the WordPress database from TribApps hosting with WP 
   mysql --user=root --password tmp_vivelohoy_1 < reembed_videos.sql
   ```
 
+7. re-embed gallery shortcodes into gallery posts that don't have the shortcode:
+
+  ```
+  mysql --user=root --password tmp_vivelohoy_1 < reembed_galleries.sql
+  ```
+
 7. remove rows in wp_blogs table associated with other blogs:
 
   ```
