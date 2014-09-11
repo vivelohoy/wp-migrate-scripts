@@ -100,22 +100,33 @@ Scripts used for migrating the WordPress database from TribApps hosting with WP 
   mysql --user=root --password tmp_vivelohoy_1 < vivelohoy-wpengine.sql
   ```
 
-14. Dump the database again but using:
+14. Dump the tables of the database individually. Put the following into a file named `dumptables.sh`, set it to executable with `chmod +x dumptables.sh`, and run it with `./dumptables.sh`:
 
-  ```
-  mysqldump -u root -p --extended-insert=FALSE --complete-insert=TRUE tmp_vivelohoy_1 > vivelohoy-completeinsert.sql
+  ```bash
+  #! /bin/bash
+  mysqldump -u root --password="" --extended-insert=FALSE --complete-insert=TRUE tmp_vivelohoy_1 wp_blog_versions      >  ./dbtables/wp_blog_versions.sql
+  mysqldump -u root --password="" --extended-insert=FALSE --complete-insert=TRUE tmp_vivelohoy_1 wp_blogs              >  ./dbtables/wp_blogs.sql
+  mysqldump -u root --password="" --extended-insert=FALSE --complete-insert=TRUE tmp_vivelohoy_1 wp_commentmeta        >  ./dbtables/wp_commentmeta.sql
+  mysqldump -u root --password="" --extended-insert=FALSE --complete-insert=TRUE tmp_vivelohoy_1 wp_comments           >  ./dbtables/wp_comments.sql
+  mysqldump -u root --password="" --extended-insert=FALSE --complete-insert=TRUE tmp_vivelohoy_1 wp_links              >  ./dbtables/wp_links.sql
+  mysqldump -u root --password="" --extended-insert=FALSE --complete-insert=TRUE tmp_vivelohoy_1 wp_options            >  ./dbtables/wp_options.sql
+  mysqldump -u root --password="" --extended-insert=FALSE --complete-insert=TRUE tmp_vivelohoy_1 wp_postmeta           >  ./dbtables/wp_postmeta.sql
+  mysqldump -u root --password="" --extended-insert=FALSE --complete-insert=TRUE tmp_vivelohoy_1 wp_posts              >  ./dbtables/wp_posts.sql
+  mysqldump -u root --password="" --extended-insert=FALSE --complete-insert=TRUE tmp_vivelohoy_1 wp_registration_log   >  ./dbtables/wp_registration_log.sql
+  mysqldump -u root --password="" --extended-insert=FALSE --complete-insert=TRUE tmp_vivelohoy_1 wp_signups            >  ./dbtables/wp_signups.sql
+  mysqldump -u root --password="" --extended-insert=FALSE --complete-insert=TRUE tmp_vivelohoy_1 wp_site               >  ./dbtables/wp_site.sql
+  mysqldump -u root --password="" --extended-insert=FALSE --complete-insert=TRUE tmp_vivelohoy_1 wp_sitemeta           >  ./dbtables/wp_sitemeta.sql
+  mysqldump -u root --password="" --extended-insert=FALSE --complete-insert=TRUE tmp_vivelohoy_1 wp_term_relationships >  ./dbtables/wp_term_relationships.sql
+  mysqldump -u root --password="" --extended-insert=FALSE --complete-insert=TRUE tmp_vivelohoy_1 wp_term_taxonomy      >  ./dbtables/wp_term_taxonomy.sql
+  mysqldump -u root --password="" --extended-insert=FALSE --complete-insert=TRUE tmp_vivelohoy_1 wp_terms              >  ./dbtables/wp_terms.sql
+  mysqldump -u root --password="" --extended-insert=FALSE --complete-insert=TRUE tmp_vivelohoy_1 wp_usermeta           >  ./dbtables/wp_usermeta.sql
+  mysqldump -u root --password="" --extended-insert=FALSE --complete-insert=TRUE tmp_vivelohoy_1 wp_users              >  ./dbtables/wp_users.sql
   ```
   
   This forces mysqldump to use a single INSERT statement for each record rather than trying to load all records in a table with a single INSERT. The latter is more efficient but WPEngine has had trouble loading that kind of dump file.
 
-15. bzip the SQL file:
-
-  ```
-  bzip2 vivelohoy-completeinsert.sql
-  ```
-
-16. Upload the bzipped SQL file to wpengine over SFTP into the _wpeprivate folder.
-17. Notify Tony Gilharry that we need the database reloaded using the uploaded SQL file.
+16. Upload the SQL files to wpengine over SFTP into the _wpeprivate folder.
+17. Notify Tony Gilharry that we need the database reloaded using the uploaded SQL files.
 18. Through phpmyadmin, reset the vivelohoy admin user’s password to what is in our DEV LOGINS password file. This can be done with the SQL statement:
 
   ```sql
