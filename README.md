@@ -62,13 +62,19 @@ Scripts used for migrating the WordPress database from TribApps hosting with WP 
   mysqldump --user=root --password tmp_vivelohoy_1 > vivelohoy.sql
   ```
   
+8. Prepare the database dump for use in the vagrant instance by replacing instances of the domain `www.vivelohoy.com` with `vagrant.dev`:
+
+  ```
+  cat vivelohoy.sql | sed s/www.vivelohoy.com/vagrant.dev/g > vivelohoy-vagrant.sql
+  ```
+  
 9. Load database dump to vagrant WordPress installation with:
 
   ```
-  fab vagrant_reload_db:vivelohoy.sql,wordpress
+  fab vagrant_reload_db:vivelohoy-vagrant.sql,wordpress
   ```
   
-10. Open http://vagrant.dev/wp-admin/ to initiate database version upgrade (to be compatible with WordPress 3.9.1 instead of 3.2)
+10. Open http://vagrant.dev/wp-admin/ to initiate database version upgrade (to be compatible with the latest version of WordPress instead of 3.2)
 11. Dump database from vagrant system to local using:
 
   ```
