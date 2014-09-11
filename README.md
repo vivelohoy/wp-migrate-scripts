@@ -84,14 +84,20 @@ Scripts used for migrating the WordPress database from TribApps hosting with WP 
 12. Replace instances of the string “MyISAM” in the dump file with “InnoDB”
 
   ```
-  cat vivelohoy-wpengine.sql | sed s/MyISAM/InnoDB/g > vivelohoy-innodb.sql
+  cat vivelohoy-upgraded.sql | sed s/MyISAM/InnoDB/g > vivelohoy-innodb.sql
+  ```
+  
+12. Replace instances of the hostname string `vagrant.dev` with the string `www.vivelohoy.com`:
+
+  ```
+  cat vivelohoy-innodb.sql | sed s/vagrant.dev/www.vivelohoy.com/g > vivelohoy-wpengine.sql
   ```
 
 13. Drop and re-create the tmp_vivelohoy_1 schema and load this with the modified database dump
 
   ```
   mysql --user=root --password --execute='DROP DATABASE tmp_vivelohoy_1; CREATE DATABASE IF NOT EXISTS tmp_vivelohoy_1 CHARACTER SET utf8;'
-  mysql --user=root --password tmp_vivelohoy_1 < vivelohoy-innodb.sql
+  mysql --user=root --password tmp_vivelohoy_1 < vivelohoy-wpengine.sql
   ```
 
 14. Dump the database again but using:
