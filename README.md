@@ -87,6 +87,25 @@ Scripts used for migrating the WordPress database from TribApps hosting with WP 
   cat vivelohoy-upgraded.sql | sed s/MyISAM/InnoDB/g > vivelohoy-innodb.sql
   ```
   
+12. Drop the temporary database and import from this InnoDB dump file:
+
+  ```
+  mysql --user=root --password --execute='DROP DATABASE tmp_vivelohoy_1; CREATE DATABASE IF NOT EXISTS tmp_vivelohoy_1 CHARACTER SET utf8;'
+  mysql --user=root --password tmp_vivelohoy_1 < vivelohoy.sql
+  ```
+
+12. Drop the FULLTEXT indices that exist on the `wp_posts` table:
+
+  ```
+  mysql --user=root --password tmp_vivelohoy_1 --execute='ALTER TABLE wp_posts DROP INDEX yarpp_title; ALTER TABLE wp_posts DROP INDEX yarpp_content;'
+  ```
+  
+12. Re-export the database, replacing the previous file:
+
+  ```
+  mysqldump --user=root --password tmp_vivelohoy_1 > vivelohoy-innodb.sql
+  ```
+  
 12. Replace instances of the hostname string `vagrant.dev` with the string `www.vivelohoy.com`:
 
   ```
